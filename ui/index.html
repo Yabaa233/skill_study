@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎲 骰子</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    color: #e8e8e8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+
+  /* ─── 骰子显示区 ─── */
+  .dice-stage {
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 600px;
+    margin-bottom: 28px;
+  }
+
+  .dice {
+    width: 140px;
+    height: 140px;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    box-shadow:
+      0 10px 30px rgba(0,0,0,0.4),
+      inset 0 2px 4px rgba(255,255,255,0.8);
+    transition: transform 0.1s ease-out;
+    user-select: none;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .dice.rolling {
+    animation: diceRoll 0.6s ease-out;
+  }
+
+  @keyframes diceRoll {
+    0%   { transform: rotateX(0deg) rotateY(0deg) scale(1); }
+    20%  { transform: rotateX(180deg) rotateY(90deg) scale(1.15); }
+    40%  { transform: rotateX(360deg) rotateY(180deg) scale(1); }
+    60%  { transform: rotateX(540deg) rotateY(270deg) scale(1.1); }
+    80%  { transform: rotateX(720deg) rotateY(360deg) scale(1); }
+    100% { transform: rotateX(720deg) rotateY(360deg) scale(1); }
+  }
+
+  .result-text {
+    font-size: 26px;
+    font-weight: 700;
+    color: #ffd700;
+    text-align: center;
+    min-height: 36px;
+    margin-bottom: 24px;
+    text-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  }
+
+  /* ─── 控制面板 ─── */
+  .controls {
+    width: 100%;
+    max-width: 360px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 14px;
+    padding: 18px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .control-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .control-row:last-of-type { margin-bottom: 0; }
+
+  .control-label {
+    font-size: 13px;
+    color: #aaa;
+    min-width: 60px;
+  }
+
+  .control-label label { cursor: pointer; }
+
+  select, input[type="number"] {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff;
+    padding: 7px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 160px;
+  }
+
+  select:focus, input[type="number"]:focus {
+    border-color: #ffd700;
+  }
+
+  select option { background: #1a1a2e; color: #e8e8e8; }
+
+  /* ─── 按钮 ─── */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 11px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 1px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #ffd700, #ff9500);
+    color: #1a1a2e;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.35);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: rgba(255,255,255,0.08);
+    color: #ccc;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+  }
+
+  /* ─── 历史记录 ─── */
+  .history-section {
+    width: 100%;
+    max-width: 360px;
+    margin-top: 22px;
+  }
+
+  .history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .history-title {
+    font-size: 14px;
+    color: #888;
+  }
+
+  .btn-clear {
+    background: none;
+    border: 1px solid rgba(255,80,80,0.3);
+    color: #ff6b6b;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-clear:hover {
+    background: rgba(255,80,80,0.1);
+    border-color: rgba(255,80,80,0.5);
+  }
+
+  .history-list {
+    max-height: 140px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
+    padding: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.15) transparent;
+  }
+
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    font-size: 13px;
+    border-radius: 6px;
+    margin-bottom: 3px;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .history-item .h-display { color: #ddd; }
+  .history-item .h-time { color: #666; font-size: 11px; }
+
+  .empty-hint {
+    text-align: center;
+    color: #555;
+    font-size: 13px;
+    padding: 16px;
+  }
+
+  /* ─── 骰宝标签 ─── */
+  .sicbo-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-left: 8px;
+  }
+  .sicbo-badge.big { background: rgba(255,80,80,0.2); color: #ff6b6b; }
+  .sicbo-badge.small { background: rgba(80,160,255,0.2); color: #6bb3ff; }
+</style>
+</head>
+<body>
+
+  <h1>🎲 骰子</h1>
+
+  <div class="dice-stage">
+    <div class="dice" id="dice" title="点击掷骰子">🎲</div>
+  </div>
+
+  <div class="result-text" id="resultText">点击下方按钮或骰子开始</div>
+
+  <div class="controls">
+    <div class="control-row">
+      <span class="control-label">模式</span>
+      <select id="modeSelect">
+        <option value="standard">标准（d6）</option>
+        <option value="multi">多颗骰子</option>
+        <option value="sicbo">骰宝（大小）</option>
+      </select>
+    </div>
+    <div class="control-row" id="sidesRow">
+      <span class="control-label"><label for="sidesInput">面数</label></span>
+      <input type="number" id="sidesInput" value="6" min="2" max="1000">
+    </div>
+    <div class="control-row" id="countRow" style="display:none;">
+      <span class="control-label"><label for="countInput">数量</label></span>
+      <input type="number" id="countInput" value="2" min="1" max="100">
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="rollBtn">🎲 掷骰子</button>
+      <button class="btn btn-secondary" id="quickBtn">连掷 x5</button>
+    </div>
+  </div>
+
+  <div class="history-section">
+    <div class="history-header">
+      <span class="history-title">📋 历史记录</span>
+      <button class="btn-clear" id="clearHistoryBtn">清空</button>
+    </div>
+    <div class="history-list" id="historyList">
+      <div class="empty-hint">暂无记录</div>
+    </div>
+  </div>
+
+<script>
+  // ─── 状态 ──────────────────────────────────────
+  const history = [];
+
+  const $ = (id) => document.getElementById(id);
+  const diceEl       = $('dice');
+  const resultTextEl = $('resultText');
+  const modeSelect   = $('modeSelect');
+  const sidesInput   = $('sidesInput');
+  const countInput   = $('countInput');
+  const rollBtn      = $('rollBtn');
+  const quickBtn     = $('quickBtn');
+  const historyList  = $('historyList');
+  const sidesRow     = $('sidesRow');
+  const countRow     = $('countRow');
+  const clearBtn     = $('clearHistoryBtn');
+
+  // 骰子 Unicode 点数图案
+  const dotPatterns = {
+    1: '⚀', 2: '⚁', 3: '⚂',
+    4: '⚃', 5: '⚄', 6: '⚅',
+  };
+
+  // ─── 模式切换 UI ─────────────────────────────
+  modeSelect.addEventListener('change', () => {
+    const mode = modeSelect.value;
+    if (mode === 'sicbo') {
+      sidesRow.style.display = 'none';
+      countRow.style.display = 'none';
+    } else if (mode === 'multi') {
+      sidesRow.style.display = 'flex';
+      countRow.style.display = 'flex';
+    } else {
+      sidesRow.style.display = 'flex';
+      countRow.style.display = 'none';
+    }
+  });
+
+  // ─── 核心投掷逻辑 ─────────────────────────────
+  function rollDie(max) {
+    return Math.floor(Math.random() * max) + 1;
+  }
+
+  function doRoll() {
+    const mode = modeSelect.value;
+
+    let result;
+    switch (mode) {
+      case 'sicbo': {
+        result = rollDie(6);
+        const badge = result <= 3
+          ? '<span class="sicbo-badge small">小</span>'
+          : '<span class="sicbo-badge big">大</span>';
+        diceEl.textContent = dotPatterns[result] || '🎲';
+        resultTextEl.innerHTML = `骰宝：**${result}** → ${badge}`;
+        addHistory(`骰宝 ${result}`, result <= 3 ? '小' : '大');
+        break;
+      }
+      case 'multi': {
+        const sides = Math.max(2, parseInt(sidesInput.value, 10) || 6);
+        const count = Math.min(100, Math.max(1, parseInt(countInput.value, 10) || 2));
+        const results = Array.from({ length: count }, () => rollDie(sides));
+        const sum = results.reduce((a, b) => a + b, 0);
+        diceEl.textContent = `🎲`;
+        resultTextEl.textContent = `${count}d${sides}: [${results.join(', ')}] = ${sum}`;
+        addHistory(`${count}d${sides}`, sum);
+        break;
+      }
+      default: { // standard
+        const sides = Math.max(2, parseInt(sidesInput.value, 10) || 6);
+        const result = rollDie(sides);
+        if (sides === 6) {
+          diceEl.textContent = dotPatterns[result] || '🎲';
+          resultTextEl.innerHTML = `你掷出了 <strong>${result}</strong> 点！`;
+        } else {
+          diceEl.textContent = `${result}`;
+          diceEl.style.fontSize = '48px';
+          resultTextEl.innerHTML = `d${sides} 结果：<strong>${result}</strong>`;
+        }
+        addHistory(`d${sides}`, result);
+        break;
+      }
+    }
+
+    // 动画
+    diceEl.classList.add('rolling');
+    setTimeout(() => diceEl.classList.remove('rolling'), 600);
+
+    // 通过 IPC 发送到主窗口（宠物气泡）
+    if (window.pluginAPI) {
+      window.pluginAPI.invoke('roll:dice', { mode }).catch(() => {});
+    }
+  }
+
+  function doQuickRoll() {
+    let delay = 0;
+    for (let i = 0; i < 5; i++) {
+      setTimeout(doRoll, delay);
+      delay += 300;
+    }
+  }
+
+  // ─── 历史 ──────────────────────────────────────
+  function addHistory(label, detail) {
+    const now = new Date();
+    const time = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    history.unshift({ label, detail, time });
+    if (history.length > 50) history.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    if (history.length === 0) {
+      historyList.innerHTML = '<div class="empty-hint">暂无记录</div>';
+      return;
+    }
+    historyList.innerHTML = history.map(h =>
+      `<div class="history-item">
+        <span class="h-display">${h.label} → ${h.detail}</span>
+        <span class="h-time">${h.time}</span>
+      </div>`
+    ).join('');
+  }
+
+  async function clearHistory() {
+    history.length = 0;
+    renderHistory();
+    try {
+      await window.pluginAPI?.invoke('roll:clear-history');
+    } catch (_) {}
+  }
+
+  // ─── 事件绑定 ─────────────────────────────────
+  rollBtn.addEventListener('click', doRoll);
+  quickBtn.addEventListener('click', doQuickRoll);
+  diceEl.addEventListener('click', doRoll);
+  clearBtn.addEventListener('click', clearHistory);
+
+  // 键盘快捷键
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' || e.key === ' ') {
+      e.preventDefault();
+      doRoll();
+    }
+  });
+
+  // 初始化时尝试加载历史
+  (async () => {
+    try {
+      const res = await window.pluginAPI?.invoke('roll:history');
+      if (res?.data) {
+        res.data.reverse().forEach(h => {
+          history.push({ label: h.mode, detail: String(h.result ?? h.sum ?? ''), time: '' });
+        });
+        renderHistory();
+      }
+    } catch (_) {}
+  })();
+</script>
+</body>
+</html>
