@@ -3,450 +3,444 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎲 骰子</title>
+<title>🌍 天气</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    color: #e8e8e8;
+    background: linear-gradient(160deg, #1a2a4a 0%, #2d4a6a 40%, #3d5a7a 70%, #4a6a8a 100%);
+    color: #e8eef4;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 16px;
+    padding: 20px 16px 24px;
     overflow-x: hidden;
   }
 
-  h1 {
-    font-size: 22px;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
-  }
-
-  /* ─── 骰子显示区 ─── */
-  .dice-stage {
-    width: 180px;
-    height: 180px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    perspective: 600px;
-    margin-bottom: 28px;
-  }
-
-  .dice {
-    width: 140px;
-    height: 140px;
-    background: linear-gradient(145deg, #ffffff, #e6e6e6);
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 64px;
-    box-shadow:
-      0 10px 30px rgba(0,0,0,0.4),
-      inset 0 2px 4px rgba(255,255,255,0.8);
-    transition: transform 0.1s ease-out;
-    user-select: none;
-    cursor: pointer;
-    position: relative;
-  }
-
-  .dice.rolling {
-    animation: diceRoll 0.6s ease-out;
-  }
-
-  @keyframes diceRoll {
-    0%   { transform: rotateX(0deg) rotateY(0deg) scale(1); }
-    20%  { transform: rotateX(180deg) rotateY(90deg) scale(1.15); }
-    40%  { transform: rotateX(360deg) rotateY(180deg) scale(1); }
-    60%  { transform: rotateX(540deg) rotateY(270deg) scale(1.1); }
-    80%  { transform: rotateX(720deg) rotateY(360deg) scale(1); }
-    100% { transform: rotateX(720deg) rotateY(360deg) scale(1); }
-  }
-
-  .result-text {
-    font-size: 26px;
-    font-weight: 700;
-    color: #ffd700;
-    text-align: center;
-    min-height: 36px;
-    margin-bottom: 24px;
-    text-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
-  }
-
-  /* ─── 控制面板 ─── */
-  .controls {
+  /* ─── 头部位置栏 ─── */
+  .header {
     width: 100%;
-    max-width: 360px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 14px;
-    padding: 18px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-
-  .control-row {
+    max-width: 380px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
-
-  .control-row:last-of-type { margin-bottom: 0; }
-
-  .control-label {
-    font-size: 13px;
-    color: #aaa;
-    min-width: 60px;
+  .city-name {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
   }
-
-  .control-label label { cursor: pointer; }
-
-  select, input[type="number"] {
-    background: rgba(0,0,0,0.3);
+  .refresh-btn {
+    background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.12);
-    color: #fff;
-    padding: 7px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-    width: 160px;
-  }
-
-  select:focus, input[type="number"]:focus {
-    border-color: #ffd700;
-  }
-
-  select option { background: #1a1a2e; color: #e8e8e8; }
-
-  /* ─── 按钮 ─── */
-  .btn-row {
+    color: #aac;
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.15s;
     display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .refresh-btn:hover { background: rgba(255,255,255,0.14); color: #fff; transform: rotate(180deg); }
+
+  /* ─── 主天气卡片 ─── */
+  .weather-card {
+    width: 100%;
+    max-width: 380px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 28px 24px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .weather-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.04) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .weather-icon-big {
+    font-size: 72px;
+    line-height: 1;
+    margin-bottom: 6px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .temp-main {
+    font-size: 52px;
+    font-weight: 200;
+    letter-spacing: -2px;
+  }
+  .temp-unit { font-size: 22px; font-weight: 300; color: #9ab; vertical-align: super; }
+
+  .weather-desc {
+    font-size: 17px;
+    color: #bcd;
+    margin-top: 2px;
+  }
+
+  .temp-range {
+    font-size: 13px;
+    color: #89a;
+    margin-top: 8px;
+  }
+
+  /* ─── 详情网格 ─── */
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin-top: 18px;
   }
-
-  .btn {
-    flex: 1;
-    padding: 11px 0;
-    border: none;
-    border-radius: 10px;
+  .detail-item {
+    background: rgba(0,0,0,0.15);
+    border-radius: 12px;
+    padding: 10px 14px;
+    text-align: left;
+  }
+  .detail-label {
+    font-size: 11px;
+    color: #789;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+  }
+  .detail-value {
     font-size: 15px;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-    letter-spacing: 1px;
   }
 
-  .btn-primary {
-    background: linear-gradient(135deg, #ffd700, #ff9500);
-    color: #1a1a2e;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25);
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.35);
-  }
-
-  .btn-primary:active { transform: translateY(0); }
-
-  .btn-secondary {
-    background: rgba(255,255,255,0.08);
-    color: #ccc;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .btn-secondary:hover {
-    background: rgba(255,255,255,0.14);
-    color: #fff;
-  }
-
-  /* ─── 历史记录 ─── */
-  .history-section {
+  /* ─── 建议区 ─── */
+  .suggestions {
     width: 100%;
-    max-width: 360px;
-    margin-top: 22px;
+    max-width: 380px;
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .suggestion-tag {
+    background: rgba(100,180,255,0.12);
+    border: 1px solid rgba(100,180,255,0.2);
+    color: #9cf;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+  }
+  .suggestion-tag.warn {
+    background: rgba(255,180,80,0.12);
+    border-color: rgba(255,180,80,0.25);
+    color: #fc8;
+  }
+  .suggestion-tag.danger {
+    background: rgba(255,100,100,0.12);
+    border-color: rgba(255,100,100,0.25);
+    color: #f88;
   }
 
-  .history-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  /* ─── 预报列表 ─── */
+  .forecast-section {
+    width: 100%;
+    max-width: 380px;
+    margin-top: 18px;
+  }
+  .section-title {
+    font-size: 14px;
+    color: #89a;
     margin-bottom: 10px;
   }
-
-  .history-title {
-    font-size: 14px;
-    color: #888;
-  }
-
-  .btn-clear {
-    background: none;
-    border: 1px solid rgba(255,80,80,0.3);
-    color: #ff6b6b;
-    padding: 4px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .btn-clear:hover {
-    background: rgba(255,80,80,0.1);
-    border-color: rgba(255,80,80,0.5);
-  }
-
-  .history-list {
-    max-height: 140px;
-    overflow-y: auto;
-    background: rgba(0,0,0,0.2);
-    border-radius: 10px;
-    padding: 8px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.15) transparent;
-  }
-
-  .history-item {
+  .forecast-list {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 10px;
-    font-size: 13px;
-    border-radius: 6px;
-    margin-bottom: 3px;
-    background: rgba(255,255,255,0.03);
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.1) transparent;
   }
-
-  .history-item .h-display { color: #ddd; }
-  .history-item .h-time { color: #666; font-size: 11px; }
-
-  .empty-hint {
+  .forecast-item {
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.05);
+    border-radius: 14px;
+    padding: 12px 16px;
     text-align: center;
-    color: #555;
+    min-width: 78px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .forecast-day {
+    font-size: 12px;
+    color: #89a;
+    margin-bottom: 6px;
+  }
+  .forecast-icon {
+    font-size: 26px;
+  }
+  .forecast-temp {
     font-size: 13px;
-    padding: 16px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .forecast-precip {
+    font-size: 10px;
+    color: #6af;
+    margin-top: 2px;
   }
 
-  /* ─── 骰宝标签 ─── */
-  .sicbo-badge {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 700;
-    margin-left: 8px;
+  /* ─── 状态提示 ─── */
+  .status-bar {
+    margin-top: 16px;
+    font-size: 11px;
+    color: #567;
+    text-align: center;
   }
-  .sicbo-badge.big { background: rgba(255,80,80,0.2); color: #ff6b6b; }
-  .sicbo-badge.small { background: rgba(80,160,255,0.2); color: #6bb3ff; }
+  .loading-spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-msg {
+    background: rgba(255,60,60,0.1);
+    border: 1px solid rgba(255,60,60,0.2);
+    color: #f88;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 13px;
+    text-align: center;
+    max-width: 380px;
+    margin-top: 10px;
+  }
 </style>
 </head>
 <body>
 
-  <h1>🎲 骰子</h1>
-
-  <div class="dice-stage">
-    <div class="dice" id="dice" title="点击掷骰子">🎲</div>
+  <div class="header">
+    <span class="city-name" id="cityName">定位中...</span>
+    <button class="refresh-btn" id="refreshBtn" title="刷新">↻</button>
   </div>
 
-  <div class="result-text" id="resultText">点击下方按钮或骰子开始</div>
+  <div class="weather-card">
+    <div class="weather-icon-big" id="weatherIcon">🌍</div>
+    <div class="temp-main"><span id="tempValue">--</span><span class="temp-unit">°C</span></div>
+    <div class="weather-desc" id="weatherDesc">正在获取天气数据...</div>
+    <div class="temp-range" id="tempRange"></div>
 
-  <div class="controls">
-    <div class="control-row">
-      <span class="control-label">模式</span>
-      <select id="modeSelect">
-        <option value="standard">标准（d6）</option>
-        <option value="multi">多颗骰子</option>
-        <option value="sicbo">骰宝（大小）</option>
-      </select>
-    </div>
-    <div class="control-row" id="sidesRow">
-      <span class="control-label"><label for="sidesInput">面数</label></span>
-      <input type="number" id="sidesInput" value="6" min="2" max="1000">
-    </div>
-    <div class="control-row" id="countRow" style="display:none;">
-      <span class="control-label"><label for="countInput">数量</label></span>
-      <input type="number" id="countInput" value="2" min="1" max="100">
-    </div>
-
-    <div class="btn-row">
-      <button class="btn btn-primary" id="rollBtn">🎲 掷骰子</button>
-      <button class="btn btn-secondary" id="quickBtn">连掷 x5</button>
+    <div class="details-grid" id="detailsGrid">
+      <div class="detail-item"><div class="detail-label">体感温度</div><div class="detail-value" id="feelsLike">--</div></div>
+      <div class="detail-item"><div class="detail-label">湿度</div><div class="detail-value" id="humidity">--</div></div>
+      <div class="detail-item"><div class="detail-label">风向风力</div><div class="detail-value" id="windInfo">--</div></div>
+      <div class="detail-item"><div class="detail-label">日出/日落</div><div class="detail-value" id="sunTime">--</div></div>
     </div>
   </div>
 
-  <div class="history-section">
-    <div class="history-header">
-      <span class="history-title">📋 历史记录</span>
-      <button class="btn-clear" id="clearHistoryBtn">清空</button>
-    </div>
-    <div class="history-list" id="historyList">
-      <div class="empty-hint">暂无记录</div>
+  <div class="suggestions" id="suggestions"></div>
+
+  <div class="forecast-section">
+    <div class="section-title">📅 未来几天</div>
+    <div class="forecast-list" id="forecastList">
+      <div style="color:#567;font-size:13px;padding:12px;">加载中...</div>
     </div>
   </div>
+
+  <div class="status-bar" id="statusBar"></div>
 
 <script>
   // ─── 状态 ──────────────────────────────────────
-  const history = [];
-
   const $ = (id) => document.getElementById(id);
-  const diceEl       = $('dice');
-  const resultTextEl = $('resultText');
-  const modeSelect   = $('modeSelect');
-  const sidesInput   = $('sidesInput');
-  const countInput   = $('countInput');
-  const rollBtn      = $('rollBtn');
-  const quickBtn     = $('quickBtn');
-  const historyList  = $('historyList');
-  const sidesRow     = $('sidesRow');
-  const countRow     = $('countRow');
-  const clearBtn     = $('clearHistoryBtn');
 
-  // 骰子 Unicode 点数图案
-  const dotPatterns = {
-    1: '⚀', 2: '⚁', 3: '⚂',
-    4: '⚃', 5: '⚄', 6: '⚅',
+  let currentData = null;
+
+  // 天气代码映射（精简版，用于 UI）
+  const WX_ICONS = {
+    200:'⛈️',201:'🌩️',202:'⛈️',210:'🌩️',211:'⛈️',212:'⛈️',221:'⛈️',
+    230:'⛈️',231:'⛈️',232:'⛈️',
+    300:'🌦️',301:'🌧️',302:'🌧️',310:'🌦️',311:'🌧️',312:'🌧️',313:'🌧️',314:'🌧️',321:'🌧️',
+    500:'🌦️',501:'🌧️',502:'🌧️',503:'🌧️',504:'🌧️',
+    511:'🌨️',520:'🌦️',521:'🌧️',522:'🌧️',531:'🌧️',
+    600:'🌨️',601:'❄️',602:'❄️',611:'🌨️',612:'🌨️',613:'🌨️',
+    615:'🌨️',616:'❄️',620:'🌨️',621:'❄️',622:'❄️',
+    701:'🌫️',711:'🌫️',721:'🌫️',731:'🌪️',741:'🌫️',
+    751:'🌪️',761:'🌪️',762:'🌋',771:'💨',781:'🌪️',
+    800:'☀️',801:'🌤️',802:'⛅',803:'☁️',804:'☁️',
   };
 
-  // ─── 模式切换 UI ─────────────────────────────
-  modeSelect.addEventListener('change', () => {
-    const mode = modeSelect.value;
-    if (mode === 'sicbo') {
-      sidesRow.style.display = 'none';
-      countRow.style.display = 'none';
-    } else if (mode === 'multi') {
-      sidesRow.style.display = 'flex';
-      countRow.style.display = 'flex';
-    } else {
-      sidesRow.style.display = 'flex';
-      countRow.style.display = 'none';
-    }
-  });
+  // ─── 数据加载 ─────────────────────────────────
 
-  // ─── 核心投掷逻辑 ─────────────────────────────
-  function rollDie(max) {
-    return Math.floor(Math.random() * max) + 1;
-  }
+  async function loadWeather() {
+    setStatus('正在获取天气数据...', true);
 
-  function doRoll() {
-    const mode = modeSelect.value;
+    try {
+      // 通过 IPC 调用插件主进程
+      if (window.pluginAPI) {
+        const res = await window.pluginAPI.invoke('geo:brief');
 
-    let result;
-    switch (mode) {
-      case 'sicbo': {
-        result = rollDie(6);
-        const badge = result <= 3
-          ? '<span class="sicbo-badge small">小</span>'
-          : '<span class="sicbo-badge big">大</span>';
-        diceEl.textContent = dotPatterns[result] || '🎲';
-        resultTextEl.innerHTML = `骰宝：**${result}** → ${badge}`;
-        addHistory(`骰宝 ${result}`, result <= 3 ? '小' : '大');
-        break;
-      }
-      case 'multi': {
-        const sides = Math.max(2, parseInt(sidesInput.value, 10) || 6);
-        const count = Math.min(100, Math.max(1, parseInt(countInput.value, 10) || 2));
-        const results = Array.from({ length: count }, () => rollDie(sides));
-        const sum = results.reduce((a, b) => a + b, 0);
-        diceEl.textContent = `🎲`;
-        resultTextEl.textContent = `${count}d${sides}: [${results.join(', ')}] = ${sum}`;
-        addHistory(`${count}d${sides}`, sum);
-        break;
-      }
-      default: { // standard
-        const sides = Math.max(2, parseInt(sidesInput.value, 10) || 6);
-        const result = rollDie(sides);
-        if (sides === 6) {
-          diceEl.textContent = dotPatterns[result] || '🎲';
-          resultTextEl.innerHTML = `你掷出了 <strong>${result}</strong> 点！`;
-        } else {
-          diceEl.textContent = `${result}`;
-          diceEl.style.fontSize = '48px';
-          resultTextEl.innerHTML = `d${sides} 结果：<strong>${result}</strong>`;
+        if (!res?.success || !res.data) {
+          throw new Error(res?.error || '返回数据为空');
         }
-        addHistory(`d${sides}`, result);
-        break;
+
+        currentData = res.data;
+        renderWeather(currentData.weather, currentData.location);
+        setStatus(`✅ 更新于 ${new Date().toLocaleTimeString('zh-CN')}`);
+      } else {
+        // 无 pluginAPI 时显示演示数据（开发模式）
+        renderDemo();
+        setStatus('⚠ 开发模式：使用模拟数据');
       }
-    }
-
-    // 动画
-    diceEl.classList.add('rolling');
-    setTimeout(() => diceEl.classList.remove('rolling'), 600);
-
-    // 通过 IPC 发送到主窗口（宠物气泡）
-    if (window.pluginAPI) {
-      window.pluginAPI.invoke('roll:dice', { mode }).catch(() => {});
+    } catch (err) {
+      showError(err.message);
+      setStatus('❌ 加载失败，点击 ↻ 重试');
     }
   }
 
-  function doQuickRoll() {
-    let delay = 0;
-    for (let i = 0; i < 5; i++) {
-      setTimeout(doRoll, delay);
-      delay += 300;
-    }
+  function renderWeather(w, loc) {
+    if (!w) return;
+
+    // 城市名
+    $('cityName').textContent = w.city || (loc ? loc.city : '未知位置');
+
+    // 主天气
+    $('weatherIcon').textContent = WX_ICONS[w.weather_code] || '🌡️';
+    $('tempValue').textContent = w.temp ?? '--';
+    $('weatherDesc').textContent = w.wInfo?.text || '--';
+    $('tempRange').textContent = w.forecast?.[0]
+      ? `${w.forecast[0].min_temp}°C ~ ${w.forecast[0].max_temp}°C`
+      : '';
+
+    // 详情
+    $('feelsLike').textContent = `${w.feels_like ?? '--'}°C`;
+    $('humidity').textContent = `${w.humidity ?? '--}%`;
+    $('windInfo').textContent = w.wind_speed != null
+      ? `${w.wind_speed} km/h`
+      : '--';
+    $('sunTime').textContent = `${w.sunrise ?? '--'} / ${w.sunset ?? '--'}`;
+
+    // 建议
+    renderSuggestions(w.suggestions);
+
+    // 预报
+    renderForecast(w.forecast || []);
   }
 
-  // ─── 历史 ──────────────────────────────────────
-  function addHistory(label, detail) {
-    const now = new Date();
-    const time = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    history.unshift({ label, detail, time });
-    if (history.length > 50) history.pop();
-    renderHistory();
+  function renderSuggestions(suggestions) {
+    const el = $('suggestions');
+    el.innerHTML = '';
+    if (!suggestions || suggestions.length === 0) return;
+
+    suggestions.forEach(s => {
+      const tag = document.createElement('span');
+      tag.className = 'suggestion-tag';
+      tag.textContent = s.replace(/[^\s]+ /, ''); // 去掉 emoji prefix
+      // 简单判断级别
+      if (s.includes('高温') || s.includes('预警')) tag.classList.add('danger');
+      else if (s.includes('注意') || s.includes('避免')) tag.classList.add('warn');
+      el.appendChild(tag);
+    });
   }
 
-  function renderHistory() {
-    if (history.length === 0) {
-      historyList.innerHTML = '<div class="empty-hint">暂无记录</div>';
+  function renderForecast(forecast) {
+    const el = $('forecastList');
+    if (forecast.length <= 1) {
+      el.innerHTML = '<div style="color:#567;font-size:13px;padding:8px;">暂无更多预报</div>';
       return;
     }
-    historyList.innerHTML = history.map(h =>
-      `<div class="history-item">
-        <span class="h-display">${h.label} → ${h.detail}</span>
-        <span class="h-time">${h.time}</span>
-      </div>`
-    ).join('');
+
+    el.innerHTML = forecast.map((f, i) => {
+      const dateStr = f.date;
+      // 格式化日期
+      const d = new Date(dateStr + 'T00:00:00');
+      const dayLabel = i === 0 ? '今天'
+        : i === 1 ? '明天'
+        : `周${'日一二三四五六'[d.getDay()]}`;
+      const icon = WX_ICONS[f.code] || '🌡️';
+
+      return `
+        <div class="forecast-item">
+          <div class="forecast-day">${dayLabel}</div>
+          <div class="forecast-icon">${icon}</div>
+          <div class="forecast-temp">${f.min_temp}/${f.max_temp}°</div>
+          ${f.precipitation_prob > 20 ? `<div class="forecast-precip">降水 ${f.precipitation_prob}%</div>` : ''}
+        </div>`;
+    }).join('');
   }
 
-  async function clearHistory() {
-    history.length = 0;
-    renderHistory();
-    try {
-      await window.pluginAPI?.invoke('roll:clear-history');
-    } catch (_) {}
+  function showError(msg) {
+    const el = $('statusBar').parentNode;
+    // 移除已有 error
+    const existing = document.querySelector('.error-msg');
+    if (existing) existing.remove();
+    const div = document.createElement('div');
+    div.className = 'error-msg';
+    div.textContent = msg;
+    el.insertBefore(div, $('statusBar'));
   }
 
-  // ─── 事件绑定 ─────────────────────────────────
-  rollBtn.addEventListener('click', doRoll);
-  quickBtn.addEventListener('click', doQuickRoll);
-  diceEl.addEventListener('click', doRoll);
-  clearBtn.addEventListener('click', clearHistory);
+  function setStatus(msg, loading = false) {
+    $('statusBar').innerHTML = loading
+      ? `<span class="loading-spinner">⟳</span> ${msg}`
+      : msg;
+  }
 
-  // 键盘快捷键
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' || e.key === ' ') {
-      e.preventDefault();
-      doRoll();
-    }
+  // 演示模式数据
+  function renderDemo() {
+    $('cityName').textContent = '深圳市';
+    $('weatherIcon').textContent = '🌤️';
+    $('tempValue').textContent = '26';
+    $('weatherDesc').textContent = '多云';
+    $('tempRange').textContent = '23°C ~ 29°C';
+    $('feelsLike').textContent = '28°C';
+    $('humidity').textContent = '75%';
+    $('windInfo').textContent = '东北风 3级';
+    $('sunTime').textContent = '06:02 / 18:47';
+
+    const demoSugs = ['温度舒适，穿 T 恤即可', '湿度较高'];
+    renderSugTags(demoSugs);
+
+    const demoForecast = [
+      { date: '', code: 802, min_temp: 23, max_temp: 29, precipitation_prob: 5 },
+      { date: '', code: 500, min_temp: 22, max_temp: 27, precipitation_prob: 65 },
+      { date: '', code: 800, min_temp: 21, max_temp: 28, precipitation_prob: 0 },
+      { date: '', code: 801, min_temp: 22, max_temp: 29, precipitation_prob: 10 },
+    ];
+    renderForecast(demoForecast);
+  }
+
+  function renderSugTags(list) {
+    const el = $('suggestions');
+    el.innerHTML = '';
+    list.forEach(s => {
+      const tag = document.createElement('span');
+      tag.className = 'suggestion-tag';
+      tag.textContent = s;
+      el.appendChild(tag);
+    });
+  }
+
+  // ─── 事件 ──────────────────────────────────────
+
+  $('refreshBtn').addEventListener('click', () => {
+    document.querySelector('.error-msg')?.remove();
+    loadWeather();
   });
 
-  // 初始化时尝试加载历史
-  (async () => {
-    try {
-      const res = await window.pluginAPI?.invoke('roll:history');
-      if (res?.data) {
-        res.data.reverse().forEach(h => {
-          history.push({ label: h.mode, detail: String(h.result ?? h.sum ?? ''), time: '' });
-        });
-        renderHistory();
-      }
-    } catch (_) {}
-  })();
+  // 自动加载
+  loadWeather();
+
+  // 每 10 分钟自动刷新
+  setInterval(loadWeather, 10 * 60 * 1000);
 </script>
 </body>
 </html>

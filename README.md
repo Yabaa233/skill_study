@@ -1,34 +1,33 @@
-# 🎲 cpskill-dice-roll
+# 🌍 cpskill-geo-aware
 
-**骰子 Skill** — ClawPet Plugin 系统的完整开发示例（娱乐类）。
+**地理位置感知与天气查询** — ClawPet 内置 Skill（v1.0.0）。
 
-一个功能完整但代码简洁的骰子插件，演示 ClawPet Plugin 系统的所有核心集成能力。
+通过 IP 定位感知用户所在城市，查询实时天气，让桌面宠物在对话中自然地提及天气状况。
 
-> **注意：** 本项目同时作为 **Plugin 开发教学示例** 保留在 Skill 市场中。
+> **状态：内置（builtin: true）** — 作为 ClawPet 核心能力集成，同时保留为 Plugin 开发教学示例。
 
 ## 功能
 
 | 能力 | 描述 |
 |---|---|
-| 🎲 标准骰子 | 掷 d6，带 Unicode 骰面显示 |
-| 🎯 自定义面数 | d20 / d100 等任意面数 |
-| 🎲🎲🎲 多颗骰子 | 一次掷多颗，返回每颗 + 总和 |
-| 🎰 骰宝模式 | 大小判定（1-3 小 / 4-6 大） |
-| 📊 投掷历史 | 自动记录最近 100 条结果 |
-| 🖥️ 独立窗口 | 可视化动画 UI，支持连掷 |
-| 🔔 双重通知 | 系统通知 + 桌面宠物气泡 |
+| 🌐 **IP 精确定位** | 通过出口 IP 获取城市、省份、经纬度、时区 |
+| ☀️ **实时天气** | 温度/体感温度/湿度/风向风力/能见度/日出日落 |
+| 📅 **多日预报** | 支持当天 + 未来 7 天预报 |
+| 💡 **智能建议** | 自动生成穿衣、出行、安全建议（雨天带伞/高温预警等） |
+| 💨 **天气代码映射** | 完整覆盖 WMO 46 种天气现象（含雷暴/沙尘暴/龙卷风） |
+| 🖥️ **独立窗口** | 可视化天气面板，动画图标 + 预报卡片 |
+| 🔄 **智能缓存** | 位置缓存 1h / 天气缓存 10min，避免频繁请求 |
 
 ## 目录结构
 
 ```
-cpskill-dice-roll/
+cpskill-geo-aware/
 ├── SKILL.md                      # 元数据 + tools 声明 + LLM 使用指南
-├── plugin.cjs                    # 插件主逻辑（生命周期 + IPC + 业务）
+├── plugin.cjs                    # 插件主逻辑（IP定位 + 天气引擎 + IPC）
 ├── scripts/
-│   ├── roll.cjs                  # LLM tool 执行入口（Node.js）
-│   └── roll.ps1                  # PowerShell 骰子引擎（CLI 兼容）
+│   └── geo.cjs                   # LLM tool 执行入口
 ├── ui/
-│   └── index.html                # 独立骰子窗口（动画交互）
+│   └── index.html                # 独立天气窗口
 ├── test.cjs                      # 功能验证脚本
 └── README.md                     # 本文件
 ```
@@ -37,67 +36,99 @@ cpskill-dice-roll/
 
 | 能力 | 实现位置 | 说明 |
 |---|---|---|
-| **插件生命周期** | `plugin.cjs` — `activate()` / `deactivate()` | 注册/清理资源 |
-| **独立 HTML 窗口** | `plugin.ui` → `ui/index.html` | `ctx.openPluginWindow()` |
-| **托盘菜单集成** | `plugin.trayMenu.label` | 右键托盘图标快捷入口 |
-| **IPC 通信** | `ctx.registerIpcHandler()` + `window.pluginAPI.invoke()` | UI↔主进程双向通信 |
-| **LLM 工具调用** | SKILL.md `tools` + `scriptEntry` | Agent 通过 tool 声明自动调用 |
-| **桌面宠物气泡** | `ctx.sendToMainWindow('ai:proactive-message', ...)` | 结果通过宠物气泡展示 |
-| **文件持久化** | `ctx.dataDir` + JSON 文件 | 投掷历史本地存储 |
-| **系统通知** | `ctx.showNotification()` | 到达提醒（可扩展） |
+| **插件生命周期** | `plugin.cjs` — `activate()` / `deactivate()` | 注册 IPC / 初始化缓存目录 |
+| **IPC 通信** | `ctx.registerIpcHandler()` | 3 个 handler：location / weather / brief |
+| **独立 HTML 窗口** | `plugin.ui` → `ui/index.html` | 天气可视化面板 |
+| **托盘菜单集成** | `plugin.trayMenu.label` | `🌍 查看天气` 快捷入口 |
+| **LLM 工具调用** | SKILL.md `tools` × 3 + `scriptEntry` | Agent 自然触发 |
+| **桌面宠物气泡** | `ctx.sendToMainWindow('ai:proactive-message')` | 天气简报通过宠物展示 |
+| **HTTP 网络请求** | Node.js 原生 `https/http` 模块 | IP API + Open-Meteo 天气 API |
+| **文件持久化** | `ctx.dataDir` + JSON 文件缓存 | 位置/天气本地缓存 |
+| **数据转换** | WMO 天气代码 → 图标/建议 | 46 种天气现象完整映射 |
 
-## 快速开始
+## 使用方式
 
-### 1. 功能验证
+### 对话触发（LLM Agent）
+
+| 用户输入 | 触发 Tool | 输出 |
+|---|---|---|
+| `"今天天气怎么样"` | `get_weather` | `🌤️ 深圳 · 26°C 多云...` |
+| `"我在哪"` | `get_location` | `📍 深圳市，广东省，中国...` |
+| `"明天要带伞吗"` | `get_weather {days:2}` | `🌧️ 小雨，降水概率 80%...` |
+| `(闲聊场景)` | `geo_weather_brief` | `📍 深圳 \| 🌤️ 26°C \| 💧 75%` |
+
+### CLI 直接执行
+
+```bash
+# IP 定位
+node scripts/geo.cjs --action location
+
+# 查询城市天气
+node scripts/geo.cjs --action weather --city Shenzhen --days 3
+
+# 一站式位置+天气
+node scripts/geo.cjs --action brief
+```
+
+### 功能验证
 
 ```bash
 node test.cjs
 ```
 
-预期输出：全部测试项 ✅ 通过。
+预期输出：全部测试项 ✅ 通过（需要网络连接）。
 
-### 2. CLI 直接执行
+## 技术架构
 
-```bash
-# 标准 d6
-pwsh scripts/roll.ps1
+```
+用户对话 → Agent (LLM)
+              │
+              ├── get_location ──→ ip-api.com ──→ 城市坐标
+              │                        │
+              │                   缓存 (1h TTL)
+              │
+              ├── get_weather ──→ geocoding-api (城市名→坐标) ──→ open-meteo API
+              │                       │                          │
+              │                  缓存 (10min TTL)           当前+预报
+              │
+              └── geo_weather_brief ──→ 先定位再查天气（组合调用）
 
-# d20
-pwsh scripts/roll.ps1 -Sides 20
-
-# 3d6
-pwsh scripts/roll.ps1 -Count 3
-
-# 骰宝
-pwsh scripts/roll.ps1 -Mode sicbo
+结果返回 → Agent 格式化输出 → 用户
+         → sendToMainWindow → 宠物气泡展示
 ```
 
-### 3. LLM Tool 调用
+### 数据源
 
-```bash
-node scripts/roll.cjs --mode standard
-node scripts/roll.cjs --mode multi --sides 6 --count 3
-node scripts/roll.cjs --mode sicbo
-```
+| 用途 | API | 认证 | 说明 |
+|---|---|---|---|
+| IP 定位 | ip-api.com | 免费，无需 key | 支持 IPv4/IPv6，中文友好 |
+| 地理编码 | Open-Meteo Geocoding | 免费，无需 key | 全球城市搜索 |
+| 天气数据 | Open-Meteo Forecast | 免费，无需 key | 基于 ECMWF/NOAA 数据 |
 
-### 4. 安装到 ClawPet
+**所有 API 均无需 Key，零配置即可使用。**
 
-将本仓库放入 Skill Registry 扫描路径，ClawPet 会自动识别 SKILL.md 并加载插件。
+## 天气现象覆盖
 
-## 对话使用示例
+完整支持 WMO 46 种天气代码分类：
 
-| 用户输入 | 输出 |
-|---|---|
-| `"掷个骰子"` | `🎲 [::::] 你掷出了 **6** 点！` |
-| `"来把骰宝"` | `🎲 骰宝结果：**5** → 大！` |
-| `"帮我掷 3 个 d20"` | `🎲 3d20 结果：[17, 3, 11] = **31**` |
-| `"掷个硬币"` | `🎲 d2 结果：**1**` |
+- **雷暴** (200-232)：从轻雷暴到剧烈雷暴/阵雪
+- **毛毛雨/雨** (300-314, 500-531)：从小雨到极端降雨
+- **雪** (600-622)：小雪到大雪、霰、雨夹雪
+- **雾/大气** (701-781)：雾、烟雾、沙尘暴、龙卷风
+- **晴到阴** (800-804)：晴天到完全阴天
+
+每种天气自动关联：
+- Unicode 图标（⛈️🌧️❄️🌫️☀️ 等）
+- 危险等级（normal/rainy/snowy/warning/danger）
+- 中文描述文本
+- 智能出行建议
 
 ## 技术要求
 
 - **OS**: win32 / darwin / linux
-- **运行时**: Node.js (用于 plugin.cjs 和 roll.cjs) / PowerShell (用于 roll.ps1)
-- **依赖**: 无第三方依赖，纯原生 API
+- **运行时**: Node.js >= 16（用于 plugin.cjs 和 geo.cjs）
+- **依赖**: 无第三方依赖（纯 Node.js 原生模块）
+- **网络**: 需要访问公网（IP API + Open-Meteo）
 - **ClawPet**: >= 1.0.0（支持 Plugin 系统）
 
 ## License
