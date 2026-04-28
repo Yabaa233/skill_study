@@ -1,5 +1,5 @@
 ---
-name: geo-aware
+name: geo-aware-custom
 displayName: "🌍 地理位置 (Geo Aware)"
 description: >
   地理位置感知与天气查询。通过 IP 定位获取用户所在城市，
@@ -121,7 +121,7 @@ node scripts/geo.cjs --action brief
 ## 目录结构
 
 ```
-cpskill-geo-aware/
+cpskill-geo-aware-custom/
 ├── SKILL.md                      ← 元数据 + tools 声明 + 本文件
 ├── plugin.cjs                    ← 插件主逻辑（IP定位引擎 + 天气查询 + IPC）
 ├── scripts/

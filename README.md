@@ -1,4 +1,4 @@
-# 🌍 cpskill-geo-aware
+# 🌍 cpskill-geo-aware-custom
 
 **地理位置感知与天气查询** — ClawPet 内置 Skill（v1.0.0）。
 
@@ -21,7 +21,7 @@
 ## 目录结构
 
 ```
-cpskill-geo-aware/
+cpskill-geo-aware-custom/
 ├── SKILL.md                      # 元数据 + tools 声明 + LLM 使用指南
 ├── plugin.cjs                    # 插件主逻辑（IP定位 + 天气引擎 + IPC）
 ├── scripts/
