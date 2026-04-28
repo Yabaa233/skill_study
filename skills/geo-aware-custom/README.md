@@ -18,10 +18,10 @@
 | 🖥️ **独立窗口** | 可视化天气面板，动画图标 + 预报卡片 |
 | 🔄 **智能缓存** | 位置缓存 1h / 天气缓存 10min，避免频繁请求 |
 
-## 目录结构
+## 目录结构（位于仓库 `skills/geo-aware-custom/`）
 
 ```
-cpskill-geo-aware-custom/
+skills/geo-aware-custom/
 ├── SKILL.md                      # 元数据 + tools 声明 + LLM 使用指南
 ├── plugin.cjs                    # 插件主逻辑（IP定位 + 天气引擎 + IPC）
 ├── scripts/
@@ -31,6 +31,8 @@ cpskill-geo-aware-custom/
 ├── test.cjs                      # 功能验证脚本
 └── README.md                     # 本文件
 ```
+
+> 本 Skill 是 monorepo 内的一员，注册表 `registry.json` 通过 `subdirectory: "skills/geo-aware-custom"` 索引到此目录。
 
 ## 演示的 Plugin 能力
 

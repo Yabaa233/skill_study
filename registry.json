@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2026-04-28T11:15:00Z",
+  "skills": [
+    {
+      "name": "geo-aware-custom",
+      "description": "地理位置感知与天气查询。通过 IP 定位获取用户所在城市，查询当地实时天气，让桌面宠物在对话中自然地提及天气状况。",
+      "author": "Yabaa233",
+      "emoji": "🌍",
+      "version": "1.0.0",
+      "repository": "",
+      "subdirectory": "skills/geo-aware-custom",
+      "ref": null,
+      "tags": ["geo", "weather", "location", "ip", "utility"],
+      "os": ["win32", "darwin", "linux"],
+      "minAppVersion": "1.0.0",
+      "changelog": "v1.0.0: 初始版本 — IP 定位 + 实时天气 + 多日预报 + 独立 UI 窗口"
+    }
+  ]
+}

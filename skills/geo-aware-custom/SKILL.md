@@ -121,7 +121,7 @@ node scripts/geo.cjs --action brief
 ## 目录结构
 
 ```
-cpskill-geo-aware-custom/
+skills/geo-aware-custom/
 ├── SKILL.md                      ← 元数据 + tools 声明 + 本文件
 ├── plugin.cjs                    ← 插件主逻辑（IP定位引擎 + 天气查询 + IPC）
 ├── scripts/
