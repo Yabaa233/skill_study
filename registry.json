@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "updatedAt": "2026-04-28T11:15:00Z",
+  "updatedAt": "2026-04-28T11:30:00Z",
   "skills": [
     {
       "name": "geo-aware-custom",
@@ -15,6 +15,20 @@
       "os": ["win32", "darwin", "linux"],
       "minAppVersion": "1.0.0",
       "changelog": "v1.0.0: 初始版本 — IP 定位 + 实时天气 + 多日预报 + 独立 UI 窗口"
+    },
+    {
+      "name": "retro-china-80s-ppt",
+      "description": "生成中国 80 年代怀旧风格 PPT 演示文稿（.pptx）。搪瓷红/米黄/墨绿配色、宋体、红双喜边框、奖状纹样、方格底纹、印章标题。支持老课本/奖状喜报/语录本/挂历四种模板。",
+      "author": "Yabaa233",
+      "emoji": "📜",
+      "version": "1.0.0",
+      "repository": "",
+      "subdirectory": "skills/retro-china-80s-ppt",
+      "ref": null,
+      "tags": ["ppt", "pptx", "retro", "china", "80s", "document", "nostalgic"],
+      "os": ["win32", "darwin", "linux"],
+      "minAppVersion": "1.0.0",
+      "changelog": "v1.0.0: 初始版本 — 四种 80 年代风格模板（老课本/奖状喜报/语录本/挂历）"
     }
   ]
 }

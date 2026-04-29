@@ -1,0 +1,6 @@
+# 依赖 & 构建产物
+node_modules/
+# 注意：scripts/*.bundle.cjs 必须提交（运行时入口），不要加进来
+
+# 测试输出
+out/

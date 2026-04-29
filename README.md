@@ -19,11 +19,19 @@ skill_study/                          ← 仓库根
 ├── registry.json                     ← 主索引（所有 Skill 的元数据）
 ├── .gitattributes                    ← Git LFS 规则（统一管理二进制资源）
 └── skills/                           ← Monorepo：所有 Skill 源码
-    └── geo-aware-custom/             ← 地理位置与天气 Skill
+    ├── geo-aware-custom/             ← 地理位置与天气 Skill
+    │   ├── SKILL.md
+    │   ├── plugin.cjs
+    │   ├── scripts/geo.cjs
+    │   ├── ui/index.html
+    │   ├── test.cjs
+    │   └── README.md
+    └── retro-china-80s-ppt/          ← 80 年代怀旧风 PPT 生成器
         ├── SKILL.md
-        ├── plugin.cjs
-        ├── scripts/geo.cjs
-        ├── ui/index.html
+        ├── package.json
+        ├── build.js
+        ├── src/retro-ppt.cjs
+        ├── scripts/retro-ppt.bundle.cjs
         ├── test.cjs
         └── README.md
 ```
@@ -35,6 +43,7 @@ skill_study/                          ← 仓库根
 | 名称 | Emoji | 简介 | 版本 |
 |------|-------|------|------|
 | [`geo-aware-custom`](./skills/geo-aware-custom) | 🌍 | IP 定位 + 实时天气 + 多日预报 + 独立 UI 窗口 | 1.0.0 |
+| [`retro-china-80s-ppt`](./skills/retro-china-80s-ppt) | 📜 | 中国 80 年代怀旧风格 PPT 生成器（四种模板） | 1.0.0 |
 
 ---
 
